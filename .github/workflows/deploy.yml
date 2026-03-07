@@ -1,0 +1,25 @@
+name: 🚀 Deploy al VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Deploy al VPS via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            mkdir -p /var/www/calculadora
+            cd /var/www/calculadora
+            git pull origin main || git clone https://github.com/arielmoblia/calculadora.git .
+            echo "✅ Deploy completado!"
