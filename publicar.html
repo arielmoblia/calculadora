@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Publicar en producción</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+        h1 { font-size: 1.5rem; color: #94a3b8; }
+        #btn-deploy {
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 30px 80px;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 40px rgba(220,38,38,0.4);
+        }
+        #btn-deploy:hover { transform: scale(1.05); background: #b91c1c; }
+        #btn-deploy:disabled { background: #475569; cursor: not-allowed; transform: none; box-shadow: none; }
+        #status {
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            border-radius: 10px;
+            min-width: 300px;
+            text-align: center;
+            display: none;
+        }
+        #status.ok { background: #166534; color: #86efac; display: block; }
+        #status.error { background: #7f1d1d; color: #fca5a5; display: block; }
+        #status.loading { background: #1e3a5f; color: #93c5fd; display: block; }
+        .info { color: #475569; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <h1>¿Listo para publicar?</h1>
+    <button id="btn-deploy" onclick="deploy()">🚀 PUBLICAR</button>
+    <div id="status"></div>
+    <p class="info">Esto sube los cambios a GitHub y actualiza el servidor</p>
+
+    <script>
+        async function deploy() {
+            const btn = document.getElementById('btn-deploy');
+            const status = document.getElementById('status');
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Publicando...';
+            status.className = 'loading';
+            status.textContent = 'Subiendo cambios... esperá un momento';
+
+            try {
+                const res = await fetch('http://157.173.212.229:9000/deploy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        secret: 'mitienda2026',
+                        message: 'Deploy desde botón PUBLICAR'
+                    })
+                });
+
+                const data = await res.json();
+                status.className = 'ok';
+                status.textContent = '✅ ¡Publicado! En 30 segundos está online';
+                btn.textContent = '✅ PUBLICADO';
+            } catch(e) {
+                status.className = 'error';
+                status.textContent = '❌ Error al publicar. Intentá de nuevo.';
+                btn.disabled = false;
+                btn.textContent = '🚀 PUBLICAR';
+            }
+        }
+    </script>
+</body>
+</html>
